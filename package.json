@@ -1,6 +1,6 @@
 {
   "name": "react-ternary-be-gone",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A React component designed to simplify conditional rendering and list iteration, providing a more readable and maintainable alternative to ternary operators and verbose conditional logic.",
   "main": "index.js",
   "scripts": {
