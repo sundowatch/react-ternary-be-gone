@@ -1,0 +1,27 @@
+{
+  "name": "react-ternary-be-gone",
+  "version": "1.0.0",
+  "description": "A React component designed to simplify conditional rendering and list iteration, providing a more readable and maintainable alternative to ternary operators and verbose conditional logic.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sundowatch/react-ternary-be-gone.git"
+  },
+  "keywords": [
+    "react",
+    "no",
+    "ternary"
+  ],
+  "author": "Ibrahim Sanduvaç",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sundowatch/react-ternary-be-gone/issues"
+  },
+  "homepage": "https://github.com/sundowatch/react-ternary-be-gone#readme"
+}
