@@ -12,10 +12,11 @@ yarn add react-ternary-be-gone
 ```
 
 
+
 ## Usage
 
 ```javascript
-import Conditional, { Case } from 'react-ternary-be-gone';
+import Conditional, { Case, If, ElseIf, Else } from 'react-ternary-be-gone';
 
 // Basic conditional rendering
 <Conditional when={true}>
@@ -45,7 +46,74 @@ const value = 'b';
   <Case when="b">B seçildi</Case>
   <Case default>Hiçbiri seçilmedi</Case>
 </Conditional>
+
+// If-ElseIf-Else rendering
+const status = 'loading';
+
+<Conditional>
+  <If when={status === 'loading'}>
+    <p>Yükleniyor...</p>
+  </If>
+  <ElseIf when={status === 'success'}>
+    <p>Başarılı!</p>
+  </ElseIf>
+  <Else>
+    <p>Durum bilinmiyor.</p>
+  </Else>
+</Conditional>
+
+// If-ElseIf-Else with advanced props
+const users = [{ id: 1, name: 'Alice', active: true }, { id: 2, name: 'Bob', active: false }];
+
+<Conditional>
+  <If when={users.length > 0} each={users} filter={user => user.active}>
+    {(user) => <p>{user.name}</p>}
+  </If>
+  <Else>
+    <p>Kullanıcı yok.</p>
+  </Else>
+</Conditional>
 ```
+### If-ElseIf-Else Blocks
+
+You can use `<If>`, `<ElseIf>`, and `<Else>` as children of `<Conditional>` (without any prop on Conditional itself) to mimic if-else if-else logic. The first matching block is rendered. You can use all Conditional props (each, filter, sort, etc.) on these blocks.
+
+**Example:**
+
+```javascript
+import Conditional, { If, ElseIf, Else } from 'react-ternary-be-gone';
+
+const status = 'success';
+
+<Conditional>
+  <If when={status === 'loading'}>
+    <p>Yükleniyor...</p>
+  </If>
+  <ElseIf when={status === 'success'}>
+    <p>Başarılı!</p>
+  </ElseIf>
+  <Else>
+    <p>Durum bilinmiyor.</p>
+  </Else>
+</Conditional>
+```
+
+**Advanced Example (with array props):**
+
+```javascript
+const users = [{ id: 1, name: 'Alice', active: true }, { id: 2, name: 'Bob', active: false }];
+
+<Conditional>
+  <If when={users.length > 0} each={users} filter={user => user.active}>
+    {(user) => <p>{user.name}</p>}
+  </If>
+  <Else>
+    <p>Kullanıcı yok.</p>
+  </Else>
+</Conditional>
+```
+
+You can use multiple `<ElseIf>` blocks. The first matching block is rendered. All Conditional props (each, filter, sort, etc.) are supported on If/ElseIf/Else blocks.
 ### `switch` (Switch-Case Rendering)
 
 Allows you to use switch-case style rendering with `<Case>` children. The `switch` prop sets the value to match, and each `<Case when={...}>...</Case>` child is checked. If no match is found, `<Case default>...</Case>` is rendered if present.

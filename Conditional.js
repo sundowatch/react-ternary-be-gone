@@ -1,5 +1,8 @@
 import React, { useMemo, useEffect } from 'react';
 import Case from './Case';
+import If from './If';
+import ElseIf from './ElseIf';
+import Else from './Else';
 
 const Conditional = ({
   when,
@@ -165,6 +168,108 @@ const Conditional = ({
     } else {
       return fallback;
     }
+  }
+
+  // If-ElseIf-Else logic
+  const childrenArray = React.Children.toArray(children);
+  const ifElseBlocks = childrenArray.filter(child =>
+    child && (child.type === If || child.type === ElseIf || child.type === Else)
+  );
+  if (ifElseBlocks.length > 0) {
+    let rendered = null;
+    for (let i = 0; i < ifElseBlocks.length; i++) {
+      const child = ifElseBlocks[i];
+      // Extract Conditional props from child
+      const {
+        when,
+        each,
+        filter,
+        sort,
+        limit,
+        reverse,
+        animate,
+        wrapper: childWrapper,
+        keyExtractor: childKeyExtractor,
+        empty: childEmpty,
+        fallback: childFallback,
+        ...rest
+      } = child.props;
+
+      // Evaluate condition
+      let condition = true;
+      if (child.type === If || child.type === ElseIf) {
+        condition = Boolean(when);
+      }
+
+      // Array processing for each
+      let arrayItems = [];
+      if (each && Array.isArray(each)) {
+        arrayItems = [...each];
+        if (filter && typeof filter === 'function') {
+          arrayItems = arrayItems.filter(filter);
+        }
+        if (sort && typeof sort === 'function') {
+          arrayItems = arrayItems.sort(sort);
+        }
+        if (reverse) {
+          arrayItems = arrayItems.reverse();
+        }
+        if (limit && typeof limit === 'number') {
+          arrayItems = arrayItems.slice(0, limit);
+        }
+      }
+
+      // Render logic
+      if ((child.type === If || child.type === ElseIf) && condition) {
+        if (each && Array.isArray(each)) {
+          if (arrayItems.length === 0) {
+            rendered = childEmpty || childFallback || null;
+            break;
+          }
+          const elements = arrayItems.map((item, idx) => (
+            <React.Fragment key={childKeyExtractor ? childKeyExtractor(item, idx) : idx}>
+              {typeof child.props.children === 'function'
+                ? child.props.children(item, idx, arrayItems)
+                : child.props.children}
+            </React.Fragment>
+          ));
+          rendered = childWrapper
+            ? React.createElement(childWrapper, null, elements)
+            : <>{elements}</>;
+          break;
+        } else {
+          rendered = childWrapper
+            ? React.createElement(childWrapper, null, child.props.children)
+            : <>{child.props.children}</>;
+          break;
+        }
+      }
+      if (child.type === Else) {
+        if (each && Array.isArray(each)) {
+          if (arrayItems.length === 0) {
+            rendered = childEmpty || childFallback || null;
+            break;
+          }
+          const elements = arrayItems.map((item, idx) => (
+            <React.Fragment key={childKeyExtractor ? childKeyExtractor(item, idx) : idx}>
+              {typeof child.props.children === 'function'
+                ? child.props.children(item, idx, arrayItems)
+                : child.props.children}
+            </React.Fragment>
+          ));
+          rendered = childWrapper
+            ? React.createElement(childWrapper, null, elements)
+            : <>{elements}</>;
+          break;
+        } else {
+          rendered = childWrapper
+            ? React.createElement(childWrapper, null, child.props.children)
+            : <>{child.props.children}</>;
+          break;
+        }
+      }
+    }
+    return rendered;
   }
 
   // Only condition
