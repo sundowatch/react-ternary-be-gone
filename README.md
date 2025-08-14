@@ -11,10 +11,11 @@ npm install react-ternary-be-gone
 yarn add react-ternary-be-gone
 ```
 
+
 ## Usage
 
 ```javascript
-import Conditional from 'react-ternary-be-gone';
+import Conditional, { Case } from 'react-ternary-be-gone';
 
 // Basic conditional rendering
 <Conditional when={true}>
@@ -34,6 +35,53 @@ const items = ['Item 1', 'Item 2', 'Item 3'];
 
 <Conditional each={items}>
   {(item, index) => <p key={index}>{item}</p>}
+</Conditional>
+
+// Switch-case rendering
+const value = 'b';
+
+<Conditional switch={value}>
+  <Case when="a">A seçildi</Case>
+  <Case when="b">B seçildi</Case>
+  <Case default>Hiçbiri seçilmedi</Case>
+</Conditional>
+```
+### `switch` (Switch-Case Rendering)
+
+Allows you to use switch-case style rendering with `<Case>` children. The `switch` prop sets the value to match, and each `<Case when={...}>...</Case>` child is checked. If no match is found, `<Case default>...</Case>` is rendered if present.
+
+**Type:** `any`
+
+**Example:**
+
+```javascript
+import Conditional, { Case } from 'react-ternary-be-gone';
+
+const value = 'b';
+
+<Conditional switch={value}>
+  <Case when="a">A seçildi</Case>
+  <Case when="b">B seçildi</Case>
+  <Case default>Hiçbiri seçilmedi</Case>
+</Conditional>
+```
+
+#### `<Case>`
+
+Child component for use with `switch` prop. Use `when` for matching value, and `default` for the default case.
+
+**Props:**
+
+- `when`: Value to match against the `switch` prop.
+- `default`: Boolean, renders if no other case matches.
+
+**Example:**
+
+```javascript
+<Conditional switch={status}>
+  <Case when="loading">Yükleniyor...</Case>
+  <Case when="success">Başarılı!</Case>
+  <Case default>Durum bilinmiyor.</Case>
 </Conditional>
 ```
 

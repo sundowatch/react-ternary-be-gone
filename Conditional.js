@@ -1,4 +1,5 @@
 import React, { useMemo, useEffect } from 'react';
+import Case from './Case';
 
 const Conditional = ({
   when,
@@ -27,6 +28,8 @@ const Conditional = ({
   startsWith = null,
   endsWith = null,
   match = null, // regex match
+  // Switch-case feature
+  switch: switchValue,
 }) => {
   const hasCondition = when !== undefined;
   const hasIteration = each !== undefined;
@@ -138,6 +141,31 @@ const Conditional = ({
 
   // Wrapper component
   const WrapperComponent = wrapper;
+
+  // Switch-case logic
+  if (switchValue !== undefined) {
+    // Find all Case children
+    const caseChildren = React.Children.toArray(children).filter(
+      child => child && child.type === Case
+    );
+    // Find matching case
+    let match = null;
+    let defaultCase = null;
+    caseChildren.forEach(child => {
+      if (child.props.default) {
+        defaultCase = child;
+      } else if (child.props.when === switchValue) {
+        match = child;
+      }
+    });
+    if (match) {
+      return <WrapperComponent>{match.props.children}</WrapperComponent>;
+    } else if (defaultCase) {
+      return <WrapperComponent>{defaultCase.props.children}</WrapperComponent>;
+    } else {
+      return fallback;
+    }
+  }
 
   // Only condition
   if (hasCondition && !hasIteration) {
