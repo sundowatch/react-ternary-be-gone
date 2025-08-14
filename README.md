@@ -42,9 +42,9 @@ const items = ['Item 1', 'Item 2', 'Item 3'];
 const value = 'b';
 
 <Conditional switch={value}>
-  <Case when="a">A seçildi</Case>
-  <Case when="b">B seçildi</Case>
-  <Case default>Hiçbiri seçilmedi</Case>
+  <Case when="a">A selected</Case>
+  <Case when="b">B selected</Case>
+  <Case default>None selected</Case>
 </Conditional>
 
 // If-ElseIf-Else rendering
@@ -52,13 +52,13 @@ const status = 'loading';
 
 <Conditional>
   <If when={status === 'loading'}>
-    <p>Yükleniyor...</p>
+  <p>Loading...</p>
   </If>
   <ElseIf when={status === 'success'}>
-    <p>Başarılı!</p>
+  <p>Success!</p>
   </ElseIf>
   <Else>
-    <p>Durum bilinmiyor.</p>
+  <p>Status unknown.</p>
   </Else>
 </Conditional>
 
@@ -70,7 +70,7 @@ const users = [{ id: 1, name: 'Alice', active: true }, { id: 2, name: 'Bob', act
     {(user) => <p>{user.name}</p>}
   </If>
   <Else>
-    <p>Kullanıcı yok.</p>
+  <p>No users found.</p>
   </Else>
 </Conditional>
 ```
@@ -147,9 +147,9 @@ Child component for use with `switch` prop. Use `when` for matching value, and `
 
 ```javascript
 <Conditional switch={status}>
-  <Case when="loading">Yükleniyor...</Case>
-  <Case when="success">Başarılı!</Case>
-  <Case default>Durum bilinmiyor.</Case>
+  <Case when="loading">Loading...</Case>
+  <Case when="success">Success!</Case>
+  <Case default>Status unknown.</Case>
 </Conditional>
 ```
 
