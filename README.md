@@ -170,13 +170,13 @@ const status = 'success';
 
 <Conditional>
   <If when={status === 'loading'}>
-    <p>Yükleniyor...</p>
+    <p>Loading...</p>
   </If>
   <ElseIf when={status === 'success'}>
-    <p>Başarılı!</p>
+    <p>Success!</p>
   </ElseIf>
   <Else>
-    <p>Durum bilinmiyor.</p>
+    <p>Status unknown.</p>
   </Else>
 </Conditional>
 ```
@@ -191,7 +191,7 @@ const users = [{ id: 1, name: 'Alice', active: true }, { id: 2, name: 'Bob', act
     {(user) => <p>{user.name}</p>}
   </If>
   <Else>
-    <p>Kullanıcı yok.</p>
+    <p>No users found.</p>
   </Else>
 </Conditional>
 ```
@@ -211,9 +211,9 @@ import Conditional, { Case } from 'react-ternary-be-gone';
 const value = 'b';
 
 <Conditional switch={value}>
-  <Case when="a">A seçildi</Case>
-  <Case when="b">B seçildi</Case>
-  <Case default>Hiçbiri seçilmedi</Case>
+  <Case when="a">A selected</Case>
+  <Case when="b">B selected</Case>
+  <Case default>None selected</Case>
 </Conditional>
 ```
 
