@@ -1,4 +1,3 @@
-```markdown
 # React Conditional Component
 
 A React component designed to simplify conditional rendering and list iteration, providing a more readable and maintainable alternative to ternary operators and verbose conditional logic.
@@ -241,7 +240,7 @@ const emptyList = [];
 
 ### `loading`
 
-A boolean value indicating whether the component is in a loading state. If true, the `fallback` prop (or a default loading message) will be rendered.
+A boolean value indicating whether the component is in a loading state. If true, `loadingFallback` (or `fallback`, or a default loading message) will be rendered instead of `children`.
 
 **Type:** `boolean`
 
@@ -253,16 +252,44 @@ A boolean value indicating whether the component is in a loading state. If true,
 </Conditional>
 ```
 
+### `loadingFallback`
+
+Content to render while `loading` is true, taking priority over `fallback`. Use this when a route or component needs a distinct loading state instead of reusing its "nothing to show" fallback.
+
+**Type:** `ReactNode`
+
+**Example:**
+
+```javascript
+<Conditional loading={isLoading} loadingFallback={<Spinner />} fallback={<p>No data.</p>}>
+  <p>Data loaded!</p>
+</Conditional>
+```
+
 ### `error`
 
-An error message to be displayed if an error occurs.
+An error value to be displayed if an error occurs. Falsy values (`null`, `undefined`, `false`, `''`) are treated as "no error".
 
-**Type:** `string`
+**Type:** `string | Error | any`
 
 **Example:**
 
 ```javascript
 <Conditional error={errorMessage}>
+  <p>Content.</p>
+</Conditional>
+```
+
+### `errorFallback`
+
+Content to render instead of the default `Error: ...` message when `error` is set. Accepts a `ReactNode`, or a function that receives the `error` value and returns one.
+
+**Type:** `ReactNode | (error: any) => ReactNode`
+
+**Example:**
+
+```javascript
+<Conditional error={errorMessage} errorFallback={(err) => <Alert>{err}</Alert>}>
   <p>Content.</p>
 </Conditional>
 ```
