@@ -1,16 +1,18 @@
 {
   "name": "react-ternary-be-gone",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "A React component designed to simplify conditional rendering and list iteration, providing a more readable and maintainable alternative to ternary operators and verbose conditional logic.",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "build": "babel src --out-dir dist --out-file-extension .js",
-    "prepublishOnly": "npm test && npm run build"
+    "typecheck": "tsc -p test-types",
+    "build": "babel src --out-dir dist --out-file-extension .js && cp src/index.d.ts dist/index.d.ts",
+    "prepublishOnly": "npm test && npm run typecheck && npm run build"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
@@ -43,10 +45,13 @@
     "@babel/preset-env": "^8.0.0",
     "@babel/preset-react": "^8.0.0",
     "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^5.0.0",
     "jsdom": "^30.1.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
+    "typescript": "^7.0.2",
     "vitest": "^5.0.1"
   }
 }

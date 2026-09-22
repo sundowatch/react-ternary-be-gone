@@ -10,7 +10,91 @@ npm install react-ternary-be-gone
 yarn add react-ternary-be-gone
 ```
 
+TypeScript definitions are bundled - no separate `@types/` package needed.
 
+## Two APIs
+
+This package ships two sets of components that cover the same ground:
+
+- **`<Show>`, `<For>`, `<Switch>`/`<Match>`** - focused, single-purpose
+  primitives. They hand the checked value back through a render prop, so
+  TypeScript narrows it exactly like `user && <p>{user.name}</p>` does. They
+  use no hooks, so they work inside React Server Components.
+- **`<Conditional>`** - the original all-in-one component (condition,
+  iteration, switch/case and if/else-if in one prop bag). Fully supported and
+  not going anywhere, but `when`/`each` can't be narrowed by TypeScript
+  (one prop bag has to cover five modes), and it uses hooks, so it needs a
+  client component boundary.
+
+New code is better off with the focused primitives. Existing `<Conditional>`
+code keeps working unchanged.
+
+```javascript
+// Focused primitives - narrow, RSC-safe
+import { Show, For, Switch, Match } from 'react-ternary-be-gone';
+
+<Show when={user} fallback={<Login />}>
+  {(u) => <p>{u.name}</p>}
+</Show>
+
+<For each={users} empty={<p>No users.</p>}>
+  {(user) => <Row key={user.id} {...user} />}
+</For>
+
+<Switch fallback={<p>Unknown.</p>}>
+  <Match when={status === 'loading'}><Spinner /></Match>
+  <Match when={status === 'error'}><Alert /></Match>
+</Switch>
+```
+
+### `<Show>`
+
+Renders `children` when `when` is truthy, `fallback` otherwise. `children`
+may be a plain node, or a function receiving the truthy value - which
+TypeScript narrows to a non-nullish type.
+
+```javascript
+<Show when={user} fallback={<p>Not signed in.</p>}>
+  {(u) => <p>{u.name}</p>}
+</Show>
+```
+
+### `<For>`
+
+Iterates `each`, calling `children(item, index, items)` per entry. Supports
+`filter`, `sort`, `limit`, `reverse`, `keyExtractor`, `empty`, `fallback`
+and `wrapper`. A nullish `each` (`each={data?.items}` before a fetch
+resolves) renders `empty` rather than crashing.
+
+Unlike `<Conditional each>`, `children` must be a function - that removes a
+whole class of mistake instead of guarding against it.
+
+```javascript
+<For each={users} filter={(u) => u.active} sort={sortBy('name')} wrapper="ul">
+  {(user) => <li key={user.id}>{user.name}</li>}
+</For>
+```
+
+`<For>` deliberately leaves out `animate`, `debug` and `onRender`; use
+`<Conditional each={...}>` if you need those.
+
+### `<Switch>` / `<Match>`
+
+Renders the first `<Match>` whose `when` is truthy, or `<Switch>`'s
+`fallback` if none match - an if/else-if/else chain as markup. `<Match>`
+children can also be a function, narrowing `when` the way `<Show>` does.
+
+```javascript
+<Switch fallback={<p>Unknown status.</p>}>
+  <Match when={status === 'loading'}><Spinner /></Match>
+  <Match when={error}>{(e) => <Alert>{e.message}</Alert>}</Match>
+  <Match when={data}>{(d) => <Table rows={d.rows} />}</Match>
+</Switch>
+```
+
+`<Match when={...}>` takes a boolean condition per branch. To match one
+value against several cases, use `<Conditional switch={value}>` with
+`<Case when="a">` - a separate feature documented below.
 
 ## Usage
 
@@ -449,6 +533,15 @@ A callback function that is called after the component renders. Provides informa
 ```
 
 ### Advanced Condition Evaluation Props
+
+> **Deprecated.** These still work and aren't scheduled for removal, but a
+> plain expression in `when` is shorter and reads better:
+> `when={a > b}` instead of `gt={{ value: a, target: b }}`. They're marked
+> `@deprecated` in the TypeScript definitions, so editors will flag them.
+>
+> Note that these props did nothing at all before v0.1.4 - the condition was
+> ignored and children always rendered. If you wrote code against the broken
+> behaviour, check it.
 
 These props allow for more complex conditional checks without needing to define a separate `when` prop.  Only one of these props should be used at a time.
 

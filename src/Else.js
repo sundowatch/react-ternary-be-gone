@@ -1,3 +1,3 @@
 import { createMarker, ELSE } from './markers';
 
-export default createMarker('Else', ELSE);
+export default createMarker('Else', ELSE, 'Conditional');

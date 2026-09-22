@@ -35,10 +35,28 @@ jobs:
 
       - run: npm run build
 
+  typecheck:
+    name: Typecheck the shipped .d.ts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # test-types/ compiles a real consumer against src/index.d.ts, including
+      # @ts-expect-error assertions that the Show/For/Match render-props
+      # actually narrow. Loosening a type there fails this job.
+      - run: npm run typecheck
+
   verify-package-installs:
     name: Verify the published tarball actually installs
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test, typecheck]
     steps:
       - uses: actions/checkout@v4
 

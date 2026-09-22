@@ -1,3 +1,3 @@
 import { createMarker, IF } from './markers';
 
-export default createMarker('If', IF);
+export default createMarker('If', IF, 'Conditional');
