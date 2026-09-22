@@ -6,10 +6,11 @@ module.exports = {
     // `"main": "dist/index.js"` promises CommonJS, so the build must not
     // rely on that detection going the right way.
     ['@babel/preset-env', { modules: 'commonjs' }],
-    // `development: false` is explicit for the same reason: preset-react
-    // otherwise chooses the dev JSX runtime from `NODE_ENV`/`BABEL_ENV`,
-    // which default to "development" when unset - exactly the case for a
-    // plain `npm run build` with no env vars exported.
-    ['@babel/preset-react', { runtime: 'automatic', development: false }],
+    // `runtime: 'classic'` (React.createElement, not the `react/jsx-runtime`
+    // import) is required by `peerDependencies: { react: ">=16.8.0" }` in
+    // package.json - the automatic runtime's `react/jsx-runtime` module
+    // doesn't exist before React 16.14.0, so building with it would silently
+    // break for anyone on 16.8-16.13 despite what peerDependencies promises.
+    ['@babel/preset-react', { runtime: 'classic', development: false }],
   ],
 };

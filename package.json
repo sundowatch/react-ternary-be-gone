@@ -21,8 +21,15 @@
   },
   "keywords": [
     "react",
-    "no",
-    "ternary"
+    "conditional-rendering",
+    "control-flow",
+    "jsx",
+    "ternary",
+    "v-if",
+    "ng-if",
+    "v-for",
+    "switch-case",
+    "if-else"
   ],
   "author": "Ibrahim Sanduvaç",
   "license": "MIT",

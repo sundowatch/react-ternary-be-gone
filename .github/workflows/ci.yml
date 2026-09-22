@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    name: Test (React ${{ matrix.react }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 16.8.0 is pinned exactly because it's the floor promised by
+        # `peerDependencies` in package.json - that specific claim is what
+        # this leg verifies. 17/18/19 float to their latest patch since
+        # nothing depends on an exact version within those majors.
+        react: ['16.8.0', '17', '18', '19']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install React ${{ matrix.react }}
+        run: npm install --no-save "react@${{ matrix.react }}" "react-dom@${{ matrix.react }}"
+
+      - run: npm test
+
+      - run: npm run build
+
+  verify-package-installs:
+    name: Verify the published tarball actually installs
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      # This job exists because 0.1.3 shipped without ever having been
+      # installed by anything: `main` pointed at dist/index.js, but dist/
+      # was never built into the published tarball. `npm pack` plus a real
+      # `npm install` in an unrelated project is the only way to catch that
+      # class of bug - unit tests run against source and never notice.
+      - name: Pack the tarball
+        run: npm pack --pack-destination "$RUNNER_TEMP"
+
+      - name: Install it into a fresh consumer project
+        run: |
+          mkdir "$RUNNER_TEMP/consumer"
+          cd "$RUNNER_TEMP/consumer"
+          npm init -y
+          npm install react react-dom "$RUNNER_TEMP"/react-ternary-be-gone-*.tgz
+
+      - name: Require it and render
+        run: |
+          node -e "
+            const React = require('react');
+            const { renderToStaticMarkup } = require('react-dom/server');
+            const Conditional = require('react-ternary-be-gone').default;
+            const { If, Else, Case, useConditionalHelpers } = require('react-ternary-be-gone');
+            const h = React.createElement;
+
+            const out = renderToStaticMarkup(h(Conditional, { when: true }, h('p', null, 'ok')));
+            if (out !== '<p>ok</p>') throw new Error('when: unexpected output ' + out);
+
+            const ifElse = renderToStaticMarkup(h(Conditional, null, h(If, { when: false }, 'a'), h(Else, null, 'b')));
+            if (ifElse !== 'b') throw new Error('If/Else: unexpected output ' + ifElse);
+
+            if (typeof useConditionalHelpers !== 'function') throw new Error('useConditionalHelpers missing');
+
+            console.log('package installs and renders correctly');
+          "
+        working-directory: ${{ runner.temp }}/consumer
